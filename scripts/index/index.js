@@ -20,6 +20,7 @@ class Indexer {
   }
 
   async index() {
+
     let repoIndexer = new RepoIndexer(this.config);
     let termIndexer = new TermIndexer(this.config);
 
@@ -32,22 +33,30 @@ class Indexer {
     }
   }
 
-  schedule(delayInSeconds) {
-    setInterval(this.index, delayInSeconds * 1000,
-      (err) => {
-        if (err) {
-          this.logger.error(err);
-        }
-      });
+  async startIndex() {
+    await this.delay(1);
+
+    this.index()
+      .then(() => this.logger.info('Indexing process complete'))
+      .catch(error => this.logger.error(error));
+  }
+
+  async delay(delayInSeconds) {
+  //   setInterval(this.index, delayInSeconds * 1000,
+  //     (err) => {
+  //       if (err) {
+  //         this.logger.error(err);
+  //       }
+  //     });
+  // }
+  return await new Promise(resolve => setTimeout(resolve, delayInSeconds * 1000));
   }
 }
 
 if (require.main === module) {
   const config = getConfig(process.env.NODE_ENV);
   let indexer = new Indexer(config);
-  indexer.index()
-    .then(() => indexer.logger.info('Indexing process complete'))
-    .catch(error => indexer.logger.error(error));
+  indexer.startIndex();
 }
 
 module.exports = Indexer;
