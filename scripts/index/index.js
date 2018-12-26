@@ -34,7 +34,7 @@ class Indexer {
   }
 
   async startIndex() {
-    await this.delay(1);
+    await this.delay(60);
 
     this.index()
       .then(() => this.logger.info('Indexing process complete'))
