@@ -2,6 +2,7 @@ const getConfig = require('../../config');
 const RepoIndexer = require("./repo");
 const TermIndexer = require("./term");
 const { Logger } = require("../../libs/loggers");
+const schedule = require('node-schedule');
 
 /**
  * Defines the class responsible for creating and managing the elasticsearch indexes
@@ -34,6 +35,7 @@ class Indexer {
   }
 
   async startIndex() {
+    console.log('Job Started');
     await this.delay(60);
 
     this.index()
@@ -42,21 +44,19 @@ class Indexer {
   }
 
   async delay(delayInSeconds) {
-  //   setInterval(this.index, delayInSeconds * 1000,
-  //     (err) => {
-  //       if (err) {
-  //         this.logger.error(err);
-  //       }
-  //     });
-  // }
-  return await new Promise(resolve => setTimeout(resolve, delayInSeconds * 1000));
+    return await new Promise(resolve => setTimeout(resolve, delayInSeconds * 1000));
+  }
+
+  async schedule() {
+    console.log('scheduling job');
+    schedule.scheduleJob('35 17 * * *', () => this.startIndex());
   }
 }
 
 if (require.main === module) {
   const config = getConfig(process.env.NODE_ENV);
   let indexer = new Indexer(config);
-  indexer.startIndex();
+  indexer.schedule();
 }
 
 module.exports = Indexer;
