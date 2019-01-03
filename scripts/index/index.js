@@ -40,6 +40,7 @@ class Indexer {
 
     this.index()
       .then(() => this.logger.info('Indexing process complete'))
+      .then(() => this.schedule())
       .catch(error => this.logger.error(error));
   }
 
@@ -56,7 +57,7 @@ class Indexer {
 if (require.main === module) {
   const config = getConfig(process.env.NODE_ENV);
   let indexer = new Indexer(config);
-  indexer.schedule();
+  indexer.startIndex();
 }
 
 module.exports = Indexer;
